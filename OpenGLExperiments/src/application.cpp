@@ -126,6 +126,12 @@ int main(void) {
     if (!glfwInit())
         return -1;
 
+    /* Use the core OpenGL so we have to use vertex arrays
+       vs getting a default one from compat */
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!window)
@@ -162,36 +168,47 @@ int main(void) {
         2, 3, 0
     };
 
+    /* Vertex array creation! */
+    /* Our vertex array id */
+    unsigned int vao;
+    /* Generate the vertex array */
+    GLCall(glGenVertexArrays(1, &vao));
+    /* Bind the vertex array */
+    GLCall(glBindVertexArray(vao));
+
     /* Create the buffer! */
     /* Our buffer id */
     unsigned int buffer;
     /* Generate x buffer(s) given an id */
-    GLCall(glGenBuffers(1, &buffer););
-        /* What kind of buffer is being generated */
-    GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer););
+    GLCall(glGenBuffers(1, &buffer));
+    /* What kind of buffer is being generated */
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
     /* Buffer our positions data.
         https://docs.gl/gl4/glBufferData */
     GLCall(glBufferData(GL_ARRAY_BUFFER,
-        6 * 2 * sizeof(float),
+        4 * 2 * sizeof(float),
         &positions,
         GL_STATIC_DRAW););
 
     /* This section is for the index buffer */
     unsigned int ibo;
     GLCall(glGenBuffers(1, &ibo););
-        /* We use GL_ELEMENT_ARRAY_BUFFER instead
-           of GL_ARRAY_BUFFER here */
-    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo););
+    /* We use GL_ELEMENT_ARRAY_BUFFER instead
+       of GL_ARRAY_BUFFER here and bind it to
+       the currently bound vertex buffer */
+    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
     GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER,
         6 * sizeof(unsigned int),
         &indicies,
-        GL_STATIC_DRAW););
+        GL_STATIC_DRAW));
 
     /* Enable our attribute pointer */
-    GLCall(glEnableVertexAttribArray(0););
-    /* This defines what our positions array means */
-    /* https://docs.gl/gl4/glVertexAttribPointer */
-    GLCall(glVertexAttribPointer(0, // where we start
+    GLCall(glEnableVertexAttribArray(0));
+    /* This defines what our positions array means
+       https://docs.gl/gl4/glVertexAttribPointer */
+    GLCall(glVertexAttribPointer(0, /* where we start in vertex array. this binds
+                                       the current vertex that is buffered with 
+                                       this index of the vertex array */ 
         2,                   // how many elements per vertex
         GL_FLOAT,            // what kind of data is in there
         GL_FALSE,            // does the data need to be normalized
@@ -200,11 +217,17 @@ int main(void) {
 
     ShaderProgramSource source = ParseShader("res/shaders/basic.shader");
     unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
-    GLCall(glUseProgram(shader););
+    GLCall(glUseProgram(shader));
 
-    GLCall(int location = glGetUniformLocation(shader, "u_Color");)
+    GLCall(int location = glGetUniformLocation(shader, "u_Color"))
     ASSERT(location != -1);
     GLCall(glUniform4f(location, 0.2f, 0.3f, 0.8f, 1.0f));
+
+    /* unbind everything to show off vertex arrays */
+    GLCall(glBindVertexArray(0));
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+    GLCall(glUseProgram(0));
 
     float r = 0.0f;
     float g = 0.0f;
@@ -216,9 +239,20 @@ int main(void) {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
+        /* After unbinding everythng, we do need to restablish
+           the shader. */
+        GLCall(glUseProgram(shader));
+        /* Call the uniform in the fragment shader */
         GLCall(glUniform4f(location, r, g, b, 1.0f));
+
+        /* Becuase the vertex array binds the index buffer,
+           vertex buffer, and vertex attrib pointers, we can
+           just bind the vertex array, even after unbinding 
+           everything else. */
+        GLCall(glBindVertexArray(vao));
+
         /* Use the index buffer to draw the triangles */
-        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr););
+        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
         if (r < 1.0f) {
             r += increment;
@@ -255,7 +289,7 @@ int main(void) {
         glfwPollEvents();
     }
 
-    GLCall(glDeleteProgram(shader););
+    GLCall(glDeleteProgram(shader));
 
     glfwTerminate();
     return 0;
