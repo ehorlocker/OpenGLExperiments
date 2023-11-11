@@ -7,7 +7,7 @@
 
 #include <GL/glew.h>
 
-#include "Renderer.h"
+#include "GLLogCall.h"
 
 Shader::Shader(const std::string& filepath) :
 	m_Filepath(filepath), m_RendererID(0)

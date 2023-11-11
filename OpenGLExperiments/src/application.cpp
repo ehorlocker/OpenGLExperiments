@@ -6,11 +6,12 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "Renderer.h"
+#include "GLLogCall.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "Shader.h"
+#include "Renderer.h"
 
 int main(void) {
     GLFWwindow* window;
@@ -79,6 +80,8 @@ int main(void) {
         shader.Bind();
         shader.SetUniform4f("u_Color", 0.2f, 0.3f, 0.8f, 1.0f);
 
+        Renderer renderer;
+
         float r = 0.0f;
         float g = 0.0f;
         float b = 0.0f;
@@ -86,16 +89,11 @@ int main(void) {
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
-            /* Render here */
-            glClear(GL_COLOR_BUFFER_BIT);
+            renderer.Clear();
 
             /* Call the uniform in the fragment shader */
             shader.SetUniform4f("u_Color", r, g, b, 1.0f);
-
-            va.Bind();
-
-            /* Use the index buffer to draw the triangles */
-            GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+            renderer.Draw(va, ib, shader);
 
             if (r < 1.0f) {
                 r += increment;

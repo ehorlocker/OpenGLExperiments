@@ -5,7 +5,7 @@
 #include <iostream>
 #include <GL/glew.h>
 
-#include "Renderer.h"
+#include "GLLogCall.h"
 
 struct VertexBufferElement {
 	unsigned int type;
