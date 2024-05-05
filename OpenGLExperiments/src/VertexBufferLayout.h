@@ -32,6 +32,7 @@ struct VertexBufferElement {
 class VertexBufferLayout {
 private:
 	std::vector<VertexBufferElement> m_Elements;
+	// size of vertex
 	unsigned int m_Stride;
 public:
 	VertexBufferLayout() :

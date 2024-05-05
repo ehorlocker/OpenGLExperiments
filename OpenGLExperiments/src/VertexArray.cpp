@@ -21,6 +21,9 @@ void VertexArray::Unbind() const
     GLCall(glBindVertexArray(0))
 }
 
+/* 
+* This establishes the layout of our vertex buffer data.
+*/
 void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout)
 {
     Bind();
