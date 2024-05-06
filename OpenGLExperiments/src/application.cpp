@@ -14,6 +14,9 @@
 #include "Renderer.h"
 #include "Texture.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 int main(void) {
     GLFWwindow* window;
 
@@ -83,9 +86,12 @@ int main(void) {
         /* This section is for the index buffer */
         IndexBuffer ib(indicies, 6);
 
+        glm::mat4 projection = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+
         Shader shader("res/shaders/basic.shader");
         shader.Bind();
         shader.SetUniform4f("u_Color", 0.2f, 0.3f, 0.8f, 1.0f);
+        shader.SetUniformMat4f("u_MVP", projection);
 
         Texture texture("res/texture/fireplace.png");
         texture.Bind();
