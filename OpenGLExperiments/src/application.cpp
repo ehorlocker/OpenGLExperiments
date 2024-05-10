@@ -31,7 +31,7 @@ int main(void) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);*/
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(960, 540, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -53,10 +53,10 @@ int main(void) {
         /* Triangle vertices */
         //const int POSITION_COUNT = 12;
         float positions[] = {
-            -0.5f, -0.5f, 0.0f, 0.0f,  // 0 - index count for index buffer
-             0.5f, -0.5f, 1.0f, 0.0f,  // 1
-             0.5f,  0.5f, 1.0f, 1.0f,  // 2
-            -0.5f,  0.5f, 0.0f, 1.0f   // 3
+            100.0f, 100.0f, 0.0f, 0.0f,  // 0 - index count for index buffer
+            200.0f, 100.0f, 1.0f, 0.0f,  // 1
+            200.0f, 200.0f, 1.0f, 1.0f,  // 2
+            100.0f, 200.0f, 0.0f, 1.0f   // 3
         };
 
         /* Index buffer for drawing the same points in
@@ -86,12 +86,16 @@ int main(void) {
         /* This section is for the index buffer */
         IndexBuffer ib(indicies, 6);
 
-        glm::mat4 projection = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+        glm::mat4 projection = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100, 0, 0));
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(100, 100, 0));
+
+        glm::mat4 mvp = projection * model * view; 
 
         Shader shader("res/shaders/basic.shader");
         shader.Bind();
         shader.SetUniform4f("u_Color", 0.2f, 0.3f, 0.8f, 1.0f);
-        shader.SetUniformMat4f("u_MVP", projection);
+        shader.SetUniformMat4f("u_MVP", mvp);
 
         Texture texture("res/texture/fireplace.png");
         texture.Bind();
@@ -100,46 +104,43 @@ int main(void) {
 
         Renderer renderer;
 
-        float r = 0.0f;
-        float g = 0.0f;
-        float b = 0.0f;
-        float increment = 0.05f;
+        float x = 100;
+        float y = 100;
+        float increment = 1;
+        bool decrease = false;
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
             renderer.Clear();
 
-            /* Call the uniform in the fragment shader */
-            shader.SetUniform4f("u_Color", r, g, b, 1.0f);
-            renderer.Draw(va, ib, shader);
+            model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0));
+            mvp = projection * model * view;
 
-            if (r < 1.0f) {
-                r += increment;
-            }
-            else if (g < 1.0f) {
-                g += increment;
-            }
-            else if (b < 1.0f) {
-                b += increment;
+            /* Call the uniform in the fragment shader */
+            shader.SetUniformMat4f("u_MVP", mvp);
+
+            if (!decrease) {
+                if (x < 200 && y < 200) {
+                    x += increment;
+                    y += increment;
+                }
+                else
+                {
+                    decrease = true;
+                }
             }
             else {
-                increment = -0.05f;
+                if (x > 100 && y > 100) {
+                    x -= increment;
+                    y -= increment;
+                }
+                else
+                {
+                    decrease = false;
+                }
             }
 
-            if (increment == -0.05f) {
-                if (r > 0.0f) {
-                    r += increment;
-                }
-                else if (g > 0.0f) {
-                    g += increment;
-                }
-                else if (b > 0.0f) {
-                    b += increment;
-                }
-                else {
-                    increment = 0.05f;
-                }
-            }
+            renderer.Draw(va, ib, shader);
 
             /* Swap front and back buffers */
             glfwSwapBuffers(window);

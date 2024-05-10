@@ -29,7 +29,7 @@ Texture::Texture(const std::string& path)
 	* This creates a 2D texture image with some arguments. There
 	* are a few that are important here. internalFormat "specifies the
 	* number of color components in the texture" vs format which "specifies
-	* the format of pixel data which is an important distinction. It's 
+	* the format of pixel data" which is an important distinction. It's 
 	* important to note that the last three arguments establish how the 
 	* texture is stored in memory. GL_RGBA8 is RGBA with 8 bits for each.
 	* https://docs.gl/gl4/glTexImage2D
