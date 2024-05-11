@@ -21,6 +21,8 @@
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imgui_impl_glfw.h"
 
+#include "tests/TestClearColor.h"
+
 int main(void) {
     GLFWwindow* window;
 
@@ -119,16 +121,19 @@ int main(void) {
 
         glm::vec3 translateA(glm::vec3(100, 100, 0));
         glm::vec3 translateB(glm::vec3(200, 100, 0));
+
+        test::Test * clearColorTest = new test::TestClearColor();
+
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
             renderer.Clear();
 
-            ImGui_ImplOpenGL3_NewFrame();
-            ImGui_ImplGlfw_NewFrame();
-            ImGui::NewFrame();
+            clearColorTest->OnUpdate(0.0f);
+            clearColorTest->OnRender();
 
-
+            /*
+            * SAVE FOR LATER TESTS
             {     
                 ImGui::SliderFloat2("Translate A", &translateA.x, 0.0f, 1920.0f);  
                 ImGui::SliderFloat2("Translate B", &translateB.x, 0.0f, 1080.0f);
@@ -154,6 +159,13 @@ int main(void) {
                 shader.SetUniformMat4f("u_MVP", mvp);
                 renderer.Draw(va, ib, shader);
             }
+            */
+
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+
+            clearColorTest->OnImGuiRender();
 
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -164,6 +176,8 @@ int main(void) {
             /* Poll for and process events */
             glfwPollEvents();
         }
+
+        delete clearColorTest;
     }
 
     ImGui_ImplOpenGL3_Shutdown();
