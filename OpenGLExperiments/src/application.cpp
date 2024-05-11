@@ -17,6 +17,10 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_opengl3.h"
+#include "imgui/imgui_impl_glfw.h"
+
 int main(void) {
     GLFWwindow* window;
 
@@ -31,7 +35,7 @@ int main(void) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);*/
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(960, 540, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(1920, 1080, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -86,7 +90,7 @@ int main(void) {
         /* This section is for the index buffer */
         IndexBuffer ib(indicies, 6);
 
-        glm::mat4 projection = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
+        glm::mat4 projection = glm::ortho(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f);
         glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100, 0, 0));
         glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(100, 100, 0));
 
@@ -104,43 +108,43 @@ int main(void) {
 
         Renderer renderer;
 
-        float x = 100;
-        float y = 100;
-        float increment = 1;
-        bool decrease = false;
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO(); (void)io;
+        ImGui_ImplGlfw_InitForOpenGL(window, true);
+        ImGui_ImplOpenGL3_Init("#version 330");
+        ImGui::StyleColorsDark();
+
+        // my laptop has a high dpi so we need to set the scale higher
+        io.FontGlobalScale = 3.0f;
+
+        glm::vec3 translate(glm::vec3(100, 100, 0));
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
             renderer.Clear();
 
-            model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0));
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+
+
+            {     
+                ImGui::SliderFloat("x", &translate.x, 0.0f, 1920.0f);  
+                ImGui::SliderFloat("y", &translate.y, 0.0f, 1080.0f);
+                //ImGui::SliderFloat("y", &translate.y, 0.0f, 1080.0f);
+                ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+            }
+
+            model = glm::translate(glm::mat4(1.0f), translate);
             mvp = projection * model * view;
 
             /* Call the uniform in the fragment shader */
             shader.SetUniformMat4f("u_MVP", mvp);
 
-            if (!decrease) {
-                if (x < 200 && y < 200) {
-                    x += increment;
-                    y += increment;
-                }
-                else
-                {
-                    decrease = true;
-                }
-            }
-            else {
-                if (x > 100 && y > 100) {
-                    x -= increment;
-                    y -= increment;
-                }
-                else
-                {
-                    decrease = false;
-                }
-            }
-
             renderer.Draw(va, ib, shader);
+
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
             /* Swap front and back buffers */
             glfwSwapBuffers(window);
@@ -150,6 +154,10 @@ int main(void) {
         }
     }
 
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
     glfwTerminate();
+
     return 0;
 }
