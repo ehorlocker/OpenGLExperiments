@@ -117,7 +117,8 @@ int main(void) {
         // my laptop has a high dpi so we need to set the scale higher
         io.FontGlobalScale = 3.0f;
 
-        glm::vec3 translate(glm::vec3(100, 100, 0));
+        glm::vec3 translateA(glm::vec3(100, 100, 0));
+        glm::vec3 translateB(glm::vec3(200, 100, 0));
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
@@ -129,19 +130,30 @@ int main(void) {
 
 
             {     
-                ImGui::SliderFloat("x", &translate.x, 0.0f, 1920.0f);  
-                ImGui::SliderFloat("y", &translate.y, 0.0f, 1080.0f);
-                //ImGui::SliderFloat("y", &translate.y, 0.0f, 1080.0f);
+                ImGui::SliderFloat2("Translate A", &translateA.x, 0.0f, 1920.0f);  
+                ImGui::SliderFloat2("Translate B", &translateB.x, 0.0f, 1080.0f);
                 ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
             }
 
-            model = glm::translate(glm::mat4(1.0f), translate);
-            mvp = projection * model * view;
+            //cozy fireplace A
+            {
+                model = glm::translate(glm::mat4(1.0f), translateA);
+                mvp = projection * model * view;
+                // we bind the shader twice here because renderer.Draw does it too
+                // which is no good.
+                shader.Bind();
+                shader.SetUniformMat4f("u_MVP", mvp);
+                renderer.Draw(va, ib, shader);
+            }
 
-            /* Call the uniform in the fragment shader */
-            shader.SetUniformMat4f("u_MVP", mvp);
-
-            renderer.Draw(va, ib, shader);
+            //cozy fireplace B
+            {
+                model = glm::translate(glm::mat4(1.0f), translateB);
+                mvp = projection * model * view;
+                shader.Bind();
+                shader.SetUniformMat4f("u_MVP", mvp);
+                renderer.Draw(va, ib, shader);
+            }
 
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
