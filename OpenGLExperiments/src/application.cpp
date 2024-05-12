@@ -57,7 +57,7 @@ int main(void) {
 
     std::cout << glGetString(GL_VERSION) << std::endl;
     {  
-        /* Triangle vertices */
+        /*
         //const int POSITION_COUNT = 12;
         float positions[] = {
             100.0f, 100.0f, 0.0f, 0.0f,  // 0 - index count for index buffer
@@ -66,8 +66,6 @@ int main(void) {
             100.0f, 200.0f, 0.0f, 1.0f   // 3
         };
 
-        /* Index buffer for drawing the same points in
-           the vertex buffer multiple times.*/
         unsigned int indicies[] = {
             0, 1, 2,
             2, 3, 0
@@ -76,13 +74,10 @@ int main(void) {
         GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
         GLCall(glEnable(GL_BLEND));
 
-        /* Vertex array creation! */
         VertexArray va;
 
-        /* Create the buffer! */
         VertexBuffer vb(positions, 4 * 4 * sizeof(float));
 
-        /* Enable our attribute pointer */
         VertexBufferLayout layout;
         // vertex layout
         layout.Push<float>(2);
@@ -90,7 +85,6 @@ int main(void) {
         layout.Push<float>(2);
         va.AddBuffer(vb, layout);
 
-        /* This section is for the index buffer */
         IndexBuffer ib(indicies, 6);
 
         glm::mat4 projection = glm::ortho(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f);
@@ -109,7 +103,9 @@ int main(void) {
         // tells the shader which slot to draw
         shader.SetUniform1i("u_Texture", 0);
 
-        Renderer renderer;
+        Renderer renderer;  */
+
+        //Shader shader("res/shaders/basic.shader");
 
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -125,11 +121,12 @@ int main(void) {
 
         test::Test * testMenu = new test::Test();
         test::MainMenu mainMenu;
+        
 
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
-            renderer.Clear();
+            //renderer.Clear();
 
             if (mainMenu.InMainMenu()) {
                 mainMenu.OnUpdate(0.0f);
@@ -183,7 +180,7 @@ int main(void) {
                     ImGui::Begin("Go Back");
 
                     // Render UI elements for the second window
-                    if (ImGui::Button("Go back to main menu")) {
+                    if (ImGui::Button("Back to Main Menu")) {
                         mainMenu.SetInMainMenu(true);
                     }
 

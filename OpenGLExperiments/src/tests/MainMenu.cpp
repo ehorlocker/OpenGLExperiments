@@ -3,6 +3,7 @@
 #include "imgui/imgui.h"
 
 #include "TestClearColor.h"
+#include "TestColoredQuad.h"
 #include "Renderer.h"
 
 namespace test {
@@ -30,6 +31,12 @@ namespace test {
 		if (ImGui::Button("Clear Color Test")) {
 			delete currentTest;
 			currentTest = new TestClearColor();
+			m_InMainMenu = false;
+		}
+
+		if (ImGui::Button("Colored Quad Test")) {
+			delete currentTest;
+			currentTest = new TestColoredQuad();
 			m_InMainMenu = false;
 		}
 	}
