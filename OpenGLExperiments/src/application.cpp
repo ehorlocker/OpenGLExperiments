@@ -22,6 +22,7 @@
 #include "imgui/imgui_impl_glfw.h"
 
 #include "tests/TestClearColor.h"
+#include "tests/MainMenu.h"
 
 int main(void) {
     GLFWwindow* window;
@@ -122,15 +123,22 @@ int main(void) {
         glm::vec3 translateA(glm::vec3(100, 100, 0));
         glm::vec3 translateB(glm::vec3(200, 100, 0));
 
-        test::Test * clearColorTest = new test::TestClearColor();
+        test::Test * testMenu = new test::Test();
+        test::MainMenu mainMenu;
 
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
             renderer.Clear();
 
-            clearColorTest->OnUpdate(0.0f);
-            clearColorTest->OnRender();
+            if (mainMenu.InMainMenu()) {
+                mainMenu.OnUpdate(0.0f);
+                mainMenu.OnRender();
+            }
+            else {
+                testMenu->OnUpdate(0.0f);
+                testMenu->OnRender();
+            }
 
             /*
             * SAVE FOR LATER TESTS
@@ -165,7 +173,23 @@ int main(void) {
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
-            clearColorTest->OnImGuiRender();
+            if (mainMenu.InMainMenu()) {
+                mainMenu.OnImGuiRender(testMenu);
+            }
+            else {
+                testMenu->OnImGuiRender();
+
+                {
+                    ImGui::Begin("Go Back");
+
+                    // Render UI elements for the second window
+                    if (ImGui::Button("Go back to main menu")) {
+                        mainMenu.SetInMainMenu(true);
+                    }
+
+                    ImGui::End();
+                }
+            }
 
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -177,7 +201,7 @@ int main(void) {
             glfwPollEvents();
         }
 
-        delete clearColorTest;
+        delete testMenu;
     }
 
     ImGui_ImplOpenGL3_Shutdown();
