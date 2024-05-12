@@ -4,6 +4,7 @@
 
 #include "TestClearColor.h"
 #include "TestColoredQuad.h"
+#include "TestTexture.h"
 #include "Renderer.h"
 
 namespace test {
@@ -28,15 +29,21 @@ namespace test {
 
 	void MainMenu::OnImGuiRender(Test*& currentTest)
 	{
-		if (ImGui::Button("Clear Color Test")) {
+		if (ImGui::Button("Clear Color")) {
 			delete currentTest;
 			currentTest = new TestClearColor();
 			m_InMainMenu = false;
 		}
 
-		if (ImGui::Button("Colored Quad Test")) {
+		if (ImGui::Button("Colored Quad")) {
 			delete currentTest;
 			currentTest = new TestColoredQuad();
+			m_InMainMenu = false;
+		}
+
+		if (ImGui::Button("Textured Quad")) {
+			delete currentTest;
+			currentTest = new TestTexture();
 			m_InMainMenu = false;
 		}
 	}
