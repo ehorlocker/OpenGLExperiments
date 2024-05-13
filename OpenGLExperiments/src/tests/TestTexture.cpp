@@ -6,8 +6,7 @@
 namespace test {
     TestTexture::TestTexture()
         : m_Projection(glm::ortho(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f)),
-        m_View(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0))),
-        m_Model(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0))),
+        m_View(glm::mat4(1.0f)),m_Model(glm::mat4(1.0f)),
         m_PositionA(glm::vec3(850, 490, 0)), m_PositionB(glm::vec3(970, 490, 0))
     {
         float positions[] = {
