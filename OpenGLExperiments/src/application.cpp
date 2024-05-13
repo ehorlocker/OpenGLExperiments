@@ -21,8 +21,9 @@
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imgui_impl_glfw.h"
 
-#include "tests/TestClearColor.h"
 #include "tests/Test.h"
+#include "tests/TestClearColor.h"
+#include "tests/TestTexture.h"
 
 int main(void) {
     GLFWwindow* window;
@@ -128,40 +129,12 @@ int main(void) {
         currentTest = mainMenu;
 
         mainMenu->RegisterTest<test::TestClearColor>("Clear Color");
+        mainMenu->RegisterTest<test::TestTexture>("Texture Test");
 
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
             renderer.Clear();
-
-            /*
-            * SAVE FOR LATER TESTS
-            {     
-                ImGui::SliderFloat2("Translate A", &translateA.x, 0.0f, 1920.0f);  
-                ImGui::SliderFloat2("Translate B", &translateB.x, 0.0f, 1080.0f);
-                ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-            }
-
-            //cozy fireplace A
-            {
-                model = glm::translate(glm::mat4(1.0f), translateA);
-                mvp = projection * model * view;
-                // we bind the shader twice here because renderer.Draw does it too
-                // which is no good.
-                shader.Bind();
-                shader.SetUniformMat4f("u_MVP", mvp);
-                renderer.Draw(va, ib, shader);
-            }
-
-            //cozy fireplace B
-            {
-                model = glm::translate(glm::mat4(1.0f), translateB);
-                mvp = projection * model * view;
-                shader.Bind();
-                shader.SetUniformMat4f("u_MVP", mvp);
-                renderer.Draw(va, ib, shader);
-            }
-            */
 
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
