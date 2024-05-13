@@ -53,8 +53,9 @@ void Shader::SetUniform1i(const std::string& name, int v0)
 
 int Shader::GetUniformLocation(const std::string& name)
 {
-    if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end()) {
-        return m_UniformLocationCache[name];
+    auto uniformLocation = m_UniformLocationCache.find(name);
+    if (uniformLocation != m_UniformLocationCache.end()) {
+        return uniformLocation->second;
     }
 
     GLCall(int location = glGetUniformLocation(m_RendererID, name.c_str()));
