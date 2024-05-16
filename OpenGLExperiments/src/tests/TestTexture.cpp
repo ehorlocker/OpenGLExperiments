@@ -31,6 +31,8 @@ namespace test {
 
         m_IndexBuffer = new IndexBuffer(indicies, 6);
 
+        m_Renderer = new Renderer();
+
         glm::mat4 mvp = m_Projection * m_Model * m_View;
 
         m_Shader = new Shader("res/shaders/basic.shader");
