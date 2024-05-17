@@ -8,14 +8,14 @@ namespace test {
 		: m_Projection(glm::ortho(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f)),
 		m_View(glm::mat4(1.0f)), m_Model(glm::mat4(1.0f)), m_Color{ 0.2f, 0.3f, 0.8f, 1.0f } {
         float positions[] = {
-             835.0f, 490.0f, // 0
-             935.0f, 490.0f, // 1
-             935.0f, 590.0f, // 2
-             835.0f, 590.0f, // 3
-             985.0f, 490.0f, // 4
-            1085.0f, 490.0f, // 5
-            1085.0f, 590.0f, // 6
-             985.0f, 590.0f  // 7
+             835.0f, 490.0f, 0.2f, 0.3f, 0.8f, 1.0f, // 0
+             935.0f, 490.0f, 0.2f, 0.3f, 0.8f, 1.0f, // 1
+             935.0f, 590.0f, 0.2f, 0.3f, 0.8f, 1.0f, // 2
+             835.0f, 590.0f, 0.2f, 0.3f, 0.8f, 1.0f, // 3
+             985.0f, 490.0f, 1.0f, 0.3f, 0.1f, 1.0f, // 4
+            1085.0f, 490.0f, 1.0f, 0.3f, 0.1f, 1.0f, // 5
+            1085.0f, 590.0f, 1.0f, 0.3f, 0.1f, 1.0f, // 6
+             985.0f, 590.0f, 1.0f, 0.3f, 0.1f, 1.0f  // 7
         };
 
         unsigned int indicies[] = {
@@ -25,10 +25,11 @@ namespace test {
             6, 7, 4
         };
 
-        m_VertexBuffer = new VertexBuffer(positions, 8 * 2 * sizeof(float));
+        m_VertexBuffer = new VertexBuffer(positions, 8 * 6 * sizeof(float));
 
         VertexBufferLayout layout;
         layout.Push<float>(2);
+        layout.Push<float>(4);
         m_VertexArray = new VertexArray();
         m_VertexArray->AddBuffer(*m_VertexBuffer, layout);
 
