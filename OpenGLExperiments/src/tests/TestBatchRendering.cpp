@@ -8,14 +8,17 @@ namespace test {
 		: m_Projection(glm::ortho(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f)),
 		m_View(glm::mat4(1.0f)), m_Model(glm::mat4(1.0f)), m_Color{ 0.2f, 0.3f, 0.8f, 1.0f } {
         float positions[] = {
-             835.0f, 490.0f, 0.2f, 0.3f, 0.8f, 1.0f, // 0
-             935.0f, 490.0f, 0.2f, 0.3f, 0.8f, 1.0f, // 1
-             935.0f, 590.0f, 0.2f, 0.3f, 0.8f, 1.0f, // 2
-             835.0f, 590.0f, 0.2f, 0.3f, 0.8f, 1.0f, // 3
-             985.0f, 490.0f, 1.0f, 0.3f, 0.1f, 1.0f, // 4
-            1085.0f, 490.0f, 1.0f, 0.3f, 0.1f, 1.0f, // 5
-            1085.0f, 590.0f, 1.0f, 0.3f, 0.1f, 1.0f, // 6
-             985.0f, 590.0f, 1.0f, 0.3f, 0.1f, 1.0f  // 7
+            /*                                                      texture     */
+            /*   position             color               texture    index      */    
+             835.0f, 490.0f,   0.2f, 0.3f, 0.8f, 1.0f,  0.0f, 0.0f,  0.0f, // 0
+             935.0f, 490.0f,   0.2f, 0.3f, 0.8f, 1.0f,  1.0f, 0.0f,  0.0f, // 1
+             935.0f, 590.0f,   0.2f, 0.3f, 0.8f, 1.0f,  1.0f, 1.0f,  0.0f, // 2
+             835.0f, 590.0f,   0.2f, 0.3f, 0.8f, 1.0f,  0.0f, 1.0f,  0.0f, // 3
+
+             985.0f, 490.0f,   1.0f, 0.3f, 0.1f, 1.0f,  0.0f, 0.0f,  1.0f, // 4
+            1085.0f, 490.0f,   1.0f, 0.3f, 0.1f, 1.0f,  1.0f, 0.0f,  1.0f, // 5
+            1085.0f, 590.0f,   1.0f, 0.3f, 0.1f, 1.0f,  1.0f, 1.0f,  1.0f, // 6
+             985.0f, 590.0f,   1.0f, 0.3f, 0.1f, 1.0f,  0.0f, 1.0f,  1.0f  // 7
         };
 
         unsigned int indicies[] = {
@@ -25,11 +28,13 @@ namespace test {
             6, 7, 4
         };
 
-        m_VertexBuffer = new VertexBuffer(positions, 8 * 6 * sizeof(float));
+        m_VertexBuffer = new VertexBuffer(positions, 8 * 9 * sizeof(float));
 
         VertexBufferLayout layout;
         layout.Push<float>(2);
         layout.Push<float>(4);
+        layout.Push<float>(2);
+        layout.Push<float>(1);
         m_VertexArray = new VertexArray();
         m_VertexArray->AddBuffer(*m_VertexBuffer, layout);
 
@@ -44,6 +49,13 @@ namespace test {
         m_Shader->SetUniform4f("u_Color", m_Color[0], m_Color[1], m_Color[2], m_Color[3]);
         m_Shader->SetUniformMat4f("u_MVP", mvp);
 
+        m_Fireplace = new Texture("res/texture/fireplace.png");
+        m_Logs = new Texture("res/texture/logs.png");
+        m_Fireplace->Bind(0);
+        m_Logs->Bind(1);
+
+        int textureSamplers[2] = { 0, 1 };
+        m_Shader->SetUniform1iv("u_Textures", textureSamplers, sizeof(textureSamplers) / sizeof(*textureSamplers));
 
         GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
         GLCall(glEnable(GL_BLEND));
@@ -55,6 +67,8 @@ namespace test {
         delete m_Shader;
         delete m_Renderer;
         delete m_IndexBuffer;
+        delete m_Logs;
+        delete m_Fireplace;
 	}
 
 	void test::TestBatchRendering::OnUpdate(float deltaTime) {

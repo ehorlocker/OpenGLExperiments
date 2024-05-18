@@ -60,8 +60,7 @@ void Texture::Bind(unsigned int slot) const {
 	* draw it later on. The video establishes that computers generally
 	* have 32 slots, phones have 8, etc.
 	*/
-	GLCall(glActiveTexture(GL_TEXTURE0 + slot));
-	GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
+	GLCall(glBindTextureUnit(slot, m_RendererID));
 }
 
 void Texture::Unbind() {
